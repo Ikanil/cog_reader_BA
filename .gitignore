@@ -1,0 +1,6 @@
+test_cog
+*.o
+*.out
+build/
+src/main_test.cpp
+src/mainOWN.cpp
