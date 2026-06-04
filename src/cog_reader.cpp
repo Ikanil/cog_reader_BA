@@ -102,8 +102,9 @@ PixelPointType CogReader::worldToPixel(const WorldPointType& point) const
     // Abstand vom ursprung in X und Y richtung
     const double dx = point.x - p_geoTransform.originX; 
     const double dy = point.y - p_geoTransform.originY;
-    // Der GeoTransform beschreibt eine 2x2 matrix: [ pixelWidth   rotationX   ] der beschreibt wie Pixel in Weltkoorddinaten umgerechent werden
-    //                                              [ rotationY    pixelHeight ]
+    // Der GeoTransform beschreibt eine 2x2 matrix: [ pixelWidth   rotationX   ] 
+    // der beschreibt wie Pixel in Weltkoorddinaten [ rotationY    pixelHeight ]
+    // umgerechent werden                                           
     // Um Welt -> Pixel zu kriegen muss Matrix umgekehrt werden was nur geht wenn determinante nicht 0
     const double det = p_geoTransform.pixelWidth * p_geoTransform.pixelHeight
                     - p_geoTransform.rotationX * p_geoTransform.rotationY;
@@ -115,16 +116,23 @@ PixelPointType CogReader::worldToPixel(const WorldPointType& point) const
     PixelPointType pixel;
 
     // hier berechnet sich dann die Spalte und Zeile im Raster
+    /*
+    dx = 30
+    pixelWidth = 10
+    col = 30 / 10 = 3
+    */
     pixel.col = (p_geoTransform.pixelHeight * dx - p_geoTransform.rotationX * dy) / det;
     pixel.row = (-p_geoTransform.rotationY * dx + p_geoTransform.pixelWidth * dy) / det;
 
     return pixel;
 }
 
-// Erhält BBox in Weltkoordinaten (minX, maxX,...) und transformiert daraus Pixel Fenster für GDAL (xOffset, width,...)
+// Erhält BBox in Weltkoordinaten (minX, maxX,...) und transformiert daraus Pixel Fenster für 
+// GDAL (xOffset, width,...)
 PixelWindowType CogReader::worldBoundsToPixelWindow(const WorldBoundingBoxType& box) const
 {
-    // die vier Ecken der Bounding Box, z.B. minX, minY (unten links) werden an worldToPixel übergeben und erhalten 4 Punkte z.B p1
+    // die vier Ecken der Bounding Box, z.B. minX, minY (unten links) werden an worldToPixel 
+    // übergeben und erhalten 4 Punkte z.B p1
     // wir nehmen alle 4 da Rasterachsen manchmal negativ verlaufen besonders bei pixelHeight.
     const PixelPointType p1 = worldToPixel(WorldPointType{box.minX, box.minY}); // links unten
     const PixelPointType p2 = worldToPixel(WorldPointType{box.minX, box.maxY}); // links oben
@@ -138,10 +146,10 @@ PixelWindowType CogReader::worldBoundsToPixelWindow(const WorldBoundingBoxType& 
     const double maxRowDouble = std::max(std::max(p1.row, p2.row), std::max(p3.row, p4.row));
 
     // die Werte von werden nach unten und oben gerundet und als int gecastet
-    int minCol= static_cast<int>(std::floor(minColDouble));
-    int maxCol= static_cast<int>(std::ceil(maxColDouble));
-    int minRow= static_cast<int>(std::floor(minRowDouble));
-    int maxRow= static_cast<int>(std::ceil(maxRowDouble));
+    int minCol= static_cast<int>(std::floor(minColDouble))-1;
+    int maxCol= static_cast<int>(std::ceil(maxColDouble))+1;
+    int minRow= static_cast<int>(std::floor(minRowDouble))-1;
+    int maxRow= static_cast<int>(std::ceil(maxRowDouble))+1;
 
     // nimm den größeren wert von 0 und minCol denn falls minCol negativ ist wird das Fenster richtig abgeschnitten
     minCol = std::max(0, minCol);
@@ -149,7 +157,8 @@ PixelWindowType CogReader::worldBoundsToPixelWindow(const WorldBoundingBoxType& 
     maxCol = std::min(p_rasterInfo.width, maxCol);
     maxRow = std::min(p_rasterInfo.height, maxRow);
 
-    // Offset ist der anfang des Fensters und width und height beschreiben wie breit und hoch ausgehend vom offset das Fenster sein wird
+    // Offset ist der anfang des Fensters und width und height beschreiben wie breit und hoch ausgehend 
+    // vom offset das Fenster sein wird
     PixelWindowType window;
     window.xOffset = minCol;
     window.yOffset = minRow;

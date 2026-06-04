@@ -6,8 +6,8 @@
 
 
 
-// später kann mit CogReader reader; ein objekt reader erstellen welches Funktionen wie open, close und isOpen besitzt also alles was
-//  im public berecieh deffiniert ist
+// später kann mit CogReader reader; ein objekt reader erstellen welches Funktionen 
+// wie open, close und isOpen besitzt also alles was im public berecieh deffiniert ist
 
 class CogReader {
     public: 

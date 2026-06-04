@@ -37,12 +37,14 @@ struct BoundingBox
 			nvertices = 4;
 		}
 
+		/*Erzeugt bloat
 		std::cerr << "This is elem " << elem << "(" << roid << ") " << "with corners:" << std::endl;
 		for (int i=0; i< nvertices;  ++i)
 		{
 			std::cerr <<vCornerCoords[i] << std::endl;
 		}
 		std::cerr << "and bounding-box given by "<< ll <<" and " << ur <<"." << std::endl;
+		*/
 	}
 
 	MathVector<dim> ll;
